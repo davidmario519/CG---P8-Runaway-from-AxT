@@ -1,4 +1,6 @@
 let pos;
+let velocityY = 0;
+let onGround = true;
 let yaw = 0;
 let pitch = 0;
 
@@ -6,6 +8,8 @@ const EYE_HEIGHT = -50;
 const MOVE_SPEED = 5;
 const MOUSE_SENS = 0.0025;
 const PITCH_LIMIT = Math.PI / 2 - 0.01;
+const GRAVITY = 0.25;
+const JUMP_VELOCITY = -6;
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -17,9 +21,21 @@ function draw() {
   background(30);
 
   updateMovement();
+  updateVertical();
   applyCamera();
 
   drawScene();
+}
+
+function updateVertical() {
+  velocityY += GRAVITY;
+  pos.y += velocityY;
+
+  if (pos.y >= EYE_HEIGHT) {
+    pos.y = EYE_HEIGHT;
+    velocityY = 0;
+    onGround = true;
+  }
 }
 
 function updateMovement() {
@@ -85,6 +101,13 @@ function drawScene() {
 
 function mousePressed() {
   requestPointerLock();
+}
+
+function keyPressed() {
+  if (keyCode === 32 && onGround) {
+    velocityY = JUMP_VELOCITY;
+    onGround = false;
+  }
 }
 
 function mouseMoved(e) {
